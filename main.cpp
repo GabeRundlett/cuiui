@@ -16,7 +16,8 @@ class my_window : public coel::window, public cuiui::ui_container {
   public:
     my_window() : coel::window("My Window", {400, 300}), ui_container(*this), renderer(*this) {
         add_element<cuiui::button>(cuiui::button::configuration{
-            .pos = {100, 100}, .dim = {100, 100},
+            .pos = {100, 100},
+            .dim = {100, 100},
             .on_release = [](coel::application &parent_app, coel::window &parent_window, cuiui::button &button) {
                 auto &app = static_cast<my_app &>(parent_app);
                 app.add_window<my_window>();

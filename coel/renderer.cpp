@@ -19,7 +19,7 @@ namespace coel {
         if (format_id == 0)
             throw std::exception("ChoosePixelFormat() failed: cannot find a suitable pixel format.");
 
-        if (SetPixelFormat(device_context_handle, format_id, &pixel_format_desc) == FALSE) 
+        if (SetPixelFormat(device_context_handle, format_id, &pixel_format_desc) == FALSE)
             throw std::exception("SetPixelFormat() failed: cannot set format specified");
         DescribePixelFormat(device_context_handle, format_id, sizeof(pixel_format_desc), &pixel_format_desc);
 
