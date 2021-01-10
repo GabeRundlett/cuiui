@@ -6,6 +6,8 @@
 #include <coel/renderer.hpp>
 #include <glm/glm.hpp>
 
+#include <cuiui/constraint.hpp>
+
 namespace cuiui {
     class ui_component {
       public:
@@ -18,7 +20,7 @@ namespace cuiui {
         std::vector<std::unique_ptr<ui_component>> components;
 
       public:
-        glm::vec2 pos, dim;
+        constraint2d pos, dim;
         ui_container &parent;
 
         ui_container(ui_container &parent);
