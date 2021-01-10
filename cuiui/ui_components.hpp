@@ -9,7 +9,7 @@ namespace cuiui {
       public:
         using interact_callback = void (*)(coel::application &, coel::window &, button &);
         struct configuration {
-            glm::ivec2 pos, dim;
+            constraint2d position_constraint, dimentions_constraint;
             interact_callback on_press, on_release;
         };
 

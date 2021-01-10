@@ -6,6 +6,8 @@
 #include <gl/GL.h>
 #include <gl/GLU.h>
 
+using namespace cuiui::constraint_literals;
+
 class my_app : public coel::application {
   public:
 };
@@ -14,9 +16,10 @@ class my_window : public coel::window, public cuiui::ui_container {
     coel::renderer renderer;
 
   public:
-    my_window() : coel::window("My Window", {400, 300}), ui_container(*this), renderer(*this) {
+    my_window() : coel::window("My Window", {800, 600}), ui_container(*this), renderer(*this) {
         add_element<cuiui::button>(cuiui::button::configuration{
-            .pos = {100, 100}, .dim = {100, 100},
+            .pos = {10_px, 10_px},
+            .dim = {200_px, 100_pc - 20_px},
             .on_release = [](coel::application &parent_app, coel::window &parent_window, cuiui::button &button) {
                 auto &app = static_cast<my_app &>(parent_app);
                 app.add_window<my_window>();
@@ -32,6 +35,10 @@ class my_window : public coel::window, public cuiui::ui_container {
             ui_container::on_paint(renderer);
             break;
         case WM_SIZE:
+            dim = {
+                cuiui::pixel_constraint(LOWORD(window_event.native.lparam)),
+                cuiui::pixel_constraint(HIWORD(window_event.native.lparam)),
+            };
             ui_container::on_resize();
             break;
         default:

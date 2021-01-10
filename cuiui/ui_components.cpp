@@ -36,20 +36,22 @@ namespace cuiui {
         glm::vec3 col = {0.8, 0.8, 1};
         glColor3f(col.r, col.g, col.b);
 
-        glm::vec2 p1 = glm::vec2(internal_state.config.pos) / glm::vec2(r.frame_dim) * glm::vec2(2, 2) - glm::vec2(1, 1);
-        glm::vec2 p2 = p1 + glm::vec2(internal_state.config.dim) / glm::vec2(r.frame_dim) * glm::vec2(2, 2);
-        p1.y = -p1.y;
-        p2.y = -p2.y;
+        // glm::vec2 p1 = glm::vec2(internal_state.config.pos) / glm::vec2(r.frame_dim) * glm::vec2(2, 2) - glm::vec2(1, 1);
+        // glm::vec2 p2 = p1 + glm::vec2(internal_state.config.dim) / glm::vec2(r.frame_dim) * glm::vec2(2, 2);
+        // p1.y = -p1.y;
+        // p2.y = -p2.y;
 
-        glVertex2f(p1.x, p1.y);
-        glVertex2f(p1.x, p2.y);
-        glVertex2f(p2.x, p2.y);
-        glVertex2f(p2.x, p1.y);
+        // glVertex2f(p1.x, p1.y);
+        // glVertex2f(p1.x, p2.y);
+        // glVertex2f(p2.x, p2.y);
+        // glVertex2f(p2.x, p1.y);
 
         glEnd();
         glFlush();
     }
     void button::on_resize() {
+        internal_state.pos = internal_state.config.position_constraint.evaluate(internal_state.parent.pos, internal_state.parent.dim);
+        // internal_state.config.dim.y = internal_state.parent.dim.y - 200;
     }
 
     slider::slider(ui_container &parent, const configuration &config)
