@@ -3,7 +3,13 @@
 
 namespace cuiui {
     struct constraint {
-        using procedure = constraint (*)(float);
+        struct procedure {
+            float value;
+            float (*proc)(float, float);
+            float operator()(float x) {
+                return proc(x, value);
+            }
+        };
         std::vector<procedure> procedures;
         float value;
 
@@ -22,10 +28,24 @@ namespace cuiui {
     };
 
     inline constraint pixel_constraint(float x) {
-        return {.procedures = {[=](float val) { return x; }}, .value = x};
+        return {
+            .procedures = {{
+                .value = x,
+                .proc = [](float x, float val) {
+                    return x; // TODO: fix math
+                },
+            }},
+        };
     }
     inline constraint percent_constraint(float x) {
-        return {.value = x};
+        return {
+            .procedures = {{
+                .value = x,
+                .proc = [](float x, float val) {
+                    return x; // TODO: fix math
+                },
+            }},
+        };
     }
 
     namespace constraint_literals {
@@ -39,8 +59,8 @@ namespace cuiui {
     struct constraint2d {
         constraint x, y;
 
-        inline operator(glm::ivec2)() {
-            return {int(x.value), int(y.value)};
-        }
+        // operator(glm::ivec2)() {
+        //     return {int(x.value), int(y.value)};
+        // }
     };
 } // namespace cuiui

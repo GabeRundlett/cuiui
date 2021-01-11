@@ -25,8 +25,8 @@ namespace cuiui {
             break;
         case WM_MOUSEMOVE: {
             glm::ivec2 m = {LOWORD(event.native.lparam), HIWORD(event.native.lparam)};
-            glm::ivec2 p1 = internal_state.config.pos, p2 = internal_state.config.pos + internal_state.config.dim;
-            internal_state.is_hovered = m.x >= p1.x && m.x < p2.x && m.y >= p1.y && m.y < p2.y;
+            // glm::ivec2 p1 = internal_state.config.pos, p2 = internal_state.config.pos + internal_state.config.dim;
+            // internal_state.is_hovered = m.x >= p1.x && m.x < p2.x && m.y >= p1.y && m.y < p2.y;
         } break;
         }
     }
@@ -50,7 +50,7 @@ namespace cuiui {
         glFlush();
     }
     void button::on_resize() {
-        internal_state.pos = internal_state.config.position_constraint.evaluate(internal_state.parent.pos, internal_state.parent.dim);
+        // internal_state.pos = internal_state.config.position_constraint.evaluate(internal_state.parent.pos, internal_state.parent.dim);
         // internal_state.config.dim.y = internal_state.parent.dim.y - 200;
     }
 
