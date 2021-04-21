@@ -8,7 +8,7 @@ namespace coel {
     void application::update() {
         MSG message;
 
-    beginning:
+    app_update_beginning:
         invalidated = false;
         for (auto &w : windows) {
             while (PeekMessage(&message, w->window_handle, 0, 0, PM_REMOVE)) {
@@ -19,7 +19,7 @@ namespace coel {
                     invalidated = true;
                 }
                 if (invalidated)
-                    goto beginning;
+                    goto app_update_beginning;
             }
         }
 
