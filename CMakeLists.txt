@@ -1,31 +1,46 @@
-cmake_minimum_required(VERSION 3.16)
-project("coel")
+cmake_minimum_required(VERSION 3.21)
+project(cuiui VERSION 0.1.0)
 
-if (NOT EXISTS "${CMAKE_BINARY_DIR}/conan.cmake")
-    file(DOWNLOAD "https://raw.githubusercontent.com/conan-io/cmake-conan/master/conan.cmake" "${CMAKE_BINARY_DIR}/conan.cmake")
+include(CMakePackageConfigHelpers)
+include(GNUInstallDirs)
+
+add_library(cuiui "src/cuiui.cpp")
+add_library(cuiui::cuiui ALIAS cuiui)
+target_compile_features(cuiui PUBLIC cxx_std_20)
+if(BUILD_SHARED_LIBS AND CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    target_compile_definitions(cuiui
+        PRIVATE "CUIUI_EXPORT=__declspec(dllexport)"
+        INTERFACE "CUIUI_EXPORT=__declspec(dllimport)")
+else()
+    target_compile_definitions(cuiui
+        PUBLIC "CUIUI_EXPORT=__declspec(dllexport)")
 endif()
-include("${CMAKE_BINARY_DIR}/conan.cmake")
-
-conan_cmake_run(
-REQUIRES
-    glm/0.9.9.5
-OPTIONS
-    BASIC_SETUP
-    CMAKE_TARGETS
-BUILD
-    missing
+target_include_directories(cuiui PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
 
-add_library("coel" "coel/application.cpp" "coel/window.cpp" "coel/renderer.cpp")
-target_compile_features("coel" PUBLIC "cxx_std_20")
-target_include_directories("coel" PUBLIC ${CMAKE_CURRENT_LIST_DIR})
-target_link_libraries("coel" PUBLIC CONAN_PKG::glm opengl32)
+file(WRITE ${CMAKE_BINARY_DIR}/config.cmake.in [=[
+@PACKAGE_INIT@
+include(${CMAKE_CURRENT_LIST_DIR}/cuiui-targets.cmake)
+check_required_components(cuiui)
+]=])
+configure_package_config_file(${CMAKE_BINARY_DIR}/config.cmake.in
+    ${CMAKE_CURRENT_BINARY_DIR}/cuiui-config.cmake
+    INSTALL_DESTINATION ${CMAKE_INSTALL_DATADIR}/cuiui
+    NO_SET_AND_CHECK_MACRO)
+write_basic_package_version_file(
+    ${CMAKE_CURRENT_BINARY_DIR}/cuiui-config-version.cmake
+    VERSION ${PROJECT_VERSION}
+    COMPATIBILITY SameMajorVersion)
 
-add_library("cuiui" "cuiui/user_interface.cpp" "cuiui/ui_components.cpp")
-target_compile_features("cuiui" PUBLIC "cxx_std_20")
-target_include_directories("cuiui" PUBLIC ${CMAKE_CURRENT_LIST_DIR})
-target_link_libraries("cuiui" PUBLIC CONAN_PKG::glm)
+install(
+    FILES
+        ${CMAKE_CURRENT_BINARY_DIR}/cuiui-config.cmake
+        ${CMAKE_CURRENT_BINARY_DIR}/cuiui-config-version.cmake
+    DESTINATION
+        ${CMAKE_INSTALL_DATADIR}/cuiui)
 
-add_executable("main" "main.cpp")
-target_link_libraries("main" PUBLIC "coel" "cuiui")
-# target_link_options("main" PUBLIC "/ENTRY:mainCRTStartup" "/SUBSYSTEM:WINDOWS")
+install(TARGETS cuiui EXPORT cuiui-targets)
+install(EXPORT cuiui-targets DESTINATION ${CMAKE_INSTALL_DATADIR}/cuiui NAMESPACE cuiui::)
+install(DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/include/ TYPE INCLUDE)
