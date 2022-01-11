@@ -2,5 +2,7 @@
     "name": "cuiui",
     "version": "0.1.0",
     "description": "Cuiui C++ UI library",
-    "homepage": "https://github.com/GabeRundlett/cuiui"
+    "homepage": "https://github.com/GabeRundlett/cuiui",
+    "dependencies": [
+    ]
 }
