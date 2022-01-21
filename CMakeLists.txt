@@ -2,28 +2,59 @@ cmake_minimum_required(VERSION 3.21)
 project(cuiui VERSION 0.1.0)
 include(CMakePackageConfigHelpers)
 include(GNUInstallDirs)
-add_library(cuiui "src/context.cpp")
+add_library(cuiui "src/platform/null/context.cpp")
 add_library(cuiui::cuiui ALIAS cuiui)
-if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
-    target_sources(cuiui PRIVATE
-        "src/win32/context.cpp"
-        "src/win32/window.cpp"
-    )
-    target_link_libraries(cuiui PUBLIC opengl32)
-endif()
 target_compile_features(cuiui PUBLIC cxx_std_20)
-if(BUILD_SHARED_LIBS AND CMAKE_SYSTEM_NAME STREQUAL "Windows")
-    target_compile_definitions(cuiui
-        PRIVATE "CUIUI_EXPORT=__declspec(dllexport)"
-        INTERFACE "CUIUI_EXPORT=__declspec(dllimport)")
+
+# API selection
+set(CUIUI_NATIVE_APIS NULL X11 WIN32)
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    set(CUIUI_NATIVE_API CUIUI_NATIVE_API_X11)
+    list(APPEND CUIUI_AVAILABLE_NATIVE_APIS X11)
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    set(CUIUI_NATIVE_API CUIUI_NATIVE_API_WIN32)
+    list(APPEND CUIUI_AVAILABLE_NATIVE_APIS WIN32)
+endif()
+foreach(NATIVE_API_NAME ${CUIUI_NATIVE_APIS})
+    if(CUIUI_NATIVE_API STREQUAL "CUIUI_NATIVE_API_${NATIVE_API_NAME}")
+        set(CUIUI_USE_${NATIVE_API_NAME} 1)
+        target_compile_definitions(cuiui PUBLIC CUIUI_USE_${NATIVE_API_NAME}=1)
+    else()
+        set(CUIUI_USE_${NATIVE_API_NAME} 0)
+        target_compile_definitions(cuiui PUBLIC CUIUI_USE_${NATIVE_API_NAME}=0)
+    endif()
+endforeach()
+if(CUIUI_USE_X11)
+    target_link_libraries(cuiui PUBLIC X11 GL ${CMAKE_DL_LIBS})
+    target_sources(cuiui PRIVATE "src/platform/x11/context.cpp")
+endif()
+if(CUIUI_USE_WIN32)
+    target_sources(cuiui PRIVATE "src/platform/win32/context.cpp")
+    target_link_libraries(cuiui PUBLIC dwmapi)
+endif()
+
+# Build options
+if(BUILD_SHARED_LIBS)
+    if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+        target_link_libraries(cuiui PRIVATE opengl32)
+        target_compile_definitions(cuiui
+            PRIVATE "CUIUI_EXPORT=__declspec(dllexport)"
+            INTERFACE "CUIUI_EXPORT=__declspec(dllimport)")
+    else()
+        target_compile_definitions(cuiui
+            PUBLIC "CUIUI_EXPORT=")
+    endif()
 else()
     target_compile_definitions(cuiui
-        PUBLIC "CUIUI_EXPORT=__declspec(dllexport)")
+        PUBLIC "CUIUI_EXPORT=")
 endif()
+
 target_include_directories(cuiui PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
+
+# Packaging
 file(WRITE ${CMAKE_BINARY_DIR}/config.cmake.in [=[
 @PACKAGE_INIT@
 include(${CMAKE_CURRENT_LIST_DIR}/cuiui-targets.cmake)
