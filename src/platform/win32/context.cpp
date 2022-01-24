@@ -1,11 +1,13 @@
 #include <cuiui/platform/win32.hpp>
+#include <utility>
+#include <iostream>
 
 namespace cuiui::platform::win32 {
     void CUIUI_EXPORT Window::create(const WindowConfig &config) {
         std::string title_str(config.title);
         hwnd = CreateWindowExA(
             0, window_class_name, title_str.c_str(), WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT,
-            static_cast<int32_t>(config.size_x), static_cast<int32_t>(config.size_y),
+            static_cast<int32_t>(config.size.x), static_cast<int32_t>(config.size.y),
             nullptr, nullptr, GetModuleHandle(nullptr), this);
         ShowWindow(hwnd, SW_SHOW);
     }
@@ -23,7 +25,6 @@ namespace cuiui::platform::win32 {
     }
 
     LRESULT CUIUI_EXPORT Window::wnd_proc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
-        // std::cout << "msg: " << msg << std::endl;
         if (msg == WM_NCCREATE) {
             const CREATESTRUCT &create_struct = *reinterpret_cast<const CREATESTRUCT *>(lp);
             if (create_struct.lpCreateParams)
@@ -37,9 +38,8 @@ namespace cuiui::platform::win32 {
                 window.should_close = true;
             } break;
             case WM_SIZE: {
-                window.size_x = lp & 0xffff;
-                window.size_y = (lp & 0xffff0000) >> 16;
-
+                window.size.x = lp & 0xffff;
+                window.size.y = (lp & 0xffff0000) >> 16;
             } break;
             case WM_KEYDOWN: {
                 window.events.push({
@@ -85,6 +85,18 @@ namespace cuiui::platform::win32 {
             } break;
             case WM_MBUTTONUP: {
                 window.events.push({.type = EventType::MouseButtonEvent, .data = MouseButtonEvent{.key = 2, .action = 0}});
+            } break;
+            default: {
+                // std::array ignore{
+                //     129, 131, 1, 24, 70, 70, 28, 134, 127, 127, 127,
+                //     6, 641, 642, 7, 133, 20, 71, 3, 70, 36, 133, 20,
+                //     71, 3, 129, 131, 1, 127, 136, 127, 127, 24, 70, 134,
+                //     6, 70, 134, 127, 127, 127, 6, 8, 641, 641, 642, 642,
+                //     7, 133, 20, 71, 3, 70, 36, 133, 20, 71, 3, 127, 799,
+                //     127, 49375, 127, 36, 36, 799, 49375, 15, 15, 134, 6,
+                //     28, 28, 8, 641, 642, 32, 132};
+                // if (std::find(ignore.begin(), ignore.end(), msg) == ignore.end())
+                //     std::cout << " " << msg << ",\n";
             } break;
             }
         }
@@ -165,6 +177,20 @@ namespace cuiui::platform::win32 {
         }
 
         if (g.grabbed_window == this) {
+            if (maximized) {
+                ShowWindow(hwnd, SW_NORMAL);
+                auto old_pos = pos;
+                RECT r;
+                GetWindowRect(hwnd, &r);
+                dim.x = r.right - r.left;
+                dim.y = r.bottom - r.top;
+                pos.x = r.left;
+                pos.y = r.top;
+                auto pos_diff = pos - old_pos;
+                g.mouse_down_point -= pos_diff;
+                maximized = false;
+                window_rect = {pos, pos + dim};
+            }
             drag(g.grab_mode, pos, dim, min_dim, currentpos, g.mouse_down_point);
             MoveWindow(hwnd, pos.x, pos.y, dim.x, dim.y, false);
             if (!GetAsyncKeyState(VK_LBUTTON)) {
@@ -215,6 +241,13 @@ namespace cuiui::platform::win32 {
             } break;
             case WM_LBUTTONUP: {
                 g.grabbed_window = nullptr;
+            } break;
+            case WM_SYSCOMMAND: {
+                switch (wp) {
+                case SC_MAXIMIZE: {
+                    window.maximized = true;
+                } break;
+                }
             } break;
             }
         }

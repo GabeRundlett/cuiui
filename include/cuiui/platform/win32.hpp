@@ -6,13 +6,11 @@
 #include <Windows.h>
 
 #include <cuiui/cuiui.hpp>
-#include <utility>
-#include <iostream>
 #include <dwmapi.h>
 #include <cuiui/math/utility.hpp>
 
 namespace cuiui::platform::win32 {
-    struct Window : cuiui::Window {
+    struct Window : cuiui::WindowState {
         using WindowHandleType = cuiui::WindowHandle<Window>;
         static constexpr const char *window_class_name = "cuiuiwc_win32";
         HWND hwnd;
@@ -23,6 +21,10 @@ namespace cuiui::platform::win32 {
         static CUIUI_EXPORT LRESULT wnd_proc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp);
         static CUIUI_EXPORT void register_wc();
         static CUIUI_EXPORT void unregister_wc();
+
+        constexpr operator HWND() {
+            return hwnd;
+        }
     };
 
     struct WindowBorderless;
@@ -47,7 +49,8 @@ namespace cuiui::platform::win32 {
 
         i32vec2 pos;
         i32vec2 dim;
-        i32vec2 min_dim{140, 40};
+        i32vec2 min_dim{140, 140};
+        bool maximized = false;
 
         static inline WindowBorderlessGlobals g = {};
 

@@ -3,7 +3,7 @@
 #include <cuiui/cuiui.hpp>
 
 namespace cuiui::platform::null {
-    struct CUIUI_EXPORT Window : cuiui::Window {
+    struct CUIUI_EXPORT Window : cuiui::WindowState {
         using WindowHandleType = cuiui::WindowHandle<Window>;
         void create(const WindowConfig &config);
         void destroy();

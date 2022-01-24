@@ -6,6 +6,8 @@
 #include <queue>
 #include <variant>
 
+#include <cuiui/math/types.hpp>
+
 namespace cuiui {
     struct KeyEvent {
         uint32_t key;
@@ -42,11 +44,11 @@ namespace cuiui {
     struct WindowConfig {
         std::string_view id;
         std::string_view title;
-        uint32_t size_x, size_y;
+        u32vec2 size;
     };
 
-    struct Window {
-        uint32_t size_x, size_y;
+    struct WindowState {
+        u32vec2 size;
         bool should_close;
         std::queue<Event> events;
     };

@@ -17,17 +17,20 @@
 #include <cuiui/math/utility.hpp>
 
 namespace cuiui::platform::x11 {
-    struct Window : cuiui::Window {
+    struct Window : cuiui::WindowState {
         using WindowHandleType = cuiui::WindowHandle<Window>;
 
         Display *display;
         ::Window xid;
         Atom wm_delete_window;
-        bool should_close = false;
 
         void CUIUI_EXPORT create(const WindowConfig &config);
         void CUIUI_EXPORT destroy();
         void CUIUI_EXPORT update();
+
+        constexpr operator ::Window() {
+            return xid;
+        }
     };
 
     template <typename WindowT>
