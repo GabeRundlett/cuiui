@@ -31,6 +31,7 @@ endif()
 if(CUIUI_USE_WIN32)
     target_sources(cuiui PRIVATE "src/platform/win32/context.cpp")
     target_link_libraries(cuiui PUBLIC dwmapi)
+    target_compile_definitions(cuiui PUBLIC WIN32_LEAN_AND_MEAN NOMINMAX)
 endif()
 
 # Build options

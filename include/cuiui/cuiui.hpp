@@ -18,7 +18,7 @@ namespace cuiui {
         uint32_t action;
     };
     struct MouseMotionEvent {
-        double pos_x, pos_y;
+        f32vec2 pos;
     };
     struct WindowMotionEvent {
         int32_t pos_x, pos_y;

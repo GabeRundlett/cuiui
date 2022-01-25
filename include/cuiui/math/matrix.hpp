@@ -37,7 +37,6 @@ struct mat : vec<vec<value_t, n>, m> {
 template <typename value_t>
 inline auto perspective(value_t fovy, value_t aspect, value_t z_near, value_t z_far) {
     const value_t tan_half_fovy = std::tan(fovy / 2);
-
     mat<value_t, 4, 4> result{};
     result[0] = {value_t{1} / (aspect * tan_half_fovy), 0, 0, 0};
     result[1] = {0, value_t{1} / tan_half_fovy, 0, 0};

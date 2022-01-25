@@ -24,6 +24,13 @@ namespace cuiui::platform::win32 {
         }
     }
 
+    void Window::set_mouse_pos(uint32_t x, uint32_t y) {
+        POINT pos = {static_cast<int32_t>(x), static_cast<int32_t>(y)};
+        ClientToScreen(hwnd, &pos);
+        SetCursorPos(pos.x, pos.y);
+        mouse_pos = {static_cast<float>(x), static_cast<float>(y)};
+    }
+
     LRESULT CUIUI_EXPORT Window::wnd_proc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
         if (msg == WM_NCCREATE) {
             const CREATESTRUCT &create_struct = *reinterpret_cast<const CREATESTRUCT *>(lp);
@@ -60,11 +67,18 @@ namespace cuiui::platform::win32 {
                 });
             } break;
             case WM_MOUSEMOVE: {
+                auto new_pos = f32vec2{
+                    static_cast<float>((lp & 0x0000ffff) >> 0x00),
+                    static_cast<float>((lp & 0xffff0000) >> 0x10),
+                };
+                if (static_cast<int32_t>(window.mouse_pos.x) == static_cast<int32_t>(new_pos.x) &&
+                    static_cast<int32_t>(window.mouse_pos.y) == static_cast<int32_t>(new_pos.y))
+                    break;
+                window.mouse_pos = new_pos;
                 window.events.push({
                     .type = EventType::MouseMotionEvent,
                     .data = MouseMotionEvent{
-                        .pos_x = double(lp & 0xffff),
-                        .pos_y = double((lp & 0xffff0000) >> 16),
+                        .pos = new_pos,
                     },
                 });
             } break;

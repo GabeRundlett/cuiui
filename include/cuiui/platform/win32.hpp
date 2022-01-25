@@ -1,8 +1,6 @@
 #pragma once
 
 #if CUIUI_USE_WIN32
-#define WIN32_LEAN_AND_MEAN
-#define NOMINMAX
 #include <Windows.h>
 
 #include <cuiui/cuiui.hpp>
@@ -14,9 +12,13 @@ namespace cuiui::platform::win32 {
         using WindowHandleType = cuiui::WindowHandle<Window>;
         static constexpr const char *window_class_name = "cuiuiwc_win32";
         HWND hwnd;
+        f32vec2 mouse_pos;
+
         void CUIUI_EXPORT create(const WindowConfig &config);
         void CUIUI_EXPORT destroy();
         void CUIUI_EXPORT update();
+
+        CUIUI_EXPORT void set_mouse_pos(uint32_t x, uint32_t y);
 
         static CUIUI_EXPORT LRESULT wnd_proc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp);
         static CUIUI_EXPORT void register_wc();

@@ -5,7 +5,7 @@
 
 namespace cuiui::platform::defaults {
 #if CUIUI_USE_WIN32
-    using Window = win32::Window; //Borderless;
+    using Window = win32::WindowBorderless;
     using Context = win32::Context<Window>;
 #endif
 #if CUIUI_USE_X11
