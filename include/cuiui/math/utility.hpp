@@ -9,7 +9,7 @@ constexpr auto radians(auto angle_degrees) {
     return angle_degrees * std::numbers::pi_v<decltype(angle_degrees)> / 180;
 }
 
-u32 get_hovered_edge(i32rect r, i32vec2 p, int margin) {
+constexpr u32 get_hovered_edge(i32rect r, i32vec2 p, int margin) {
     u32 result = 0;
     p -= r.p0;
     auto size = r.p1 - r.p0;
@@ -28,7 +28,7 @@ u32 get_hovered_edge(i32rect r, i32vec2 p, int margin) {
     return result;
 }
 
-void drag(u32 grab_mode, i32vec2 &pos, i32vec2 &dim, i32vec2 min_dim, i32vec2 currentpos, i32vec2 mouse_down_point) {
+constexpr void drag(u32 grab_mode, i32vec2 &pos, i32vec2 &dim, i32vec2 min_dim, i32vec2 currentpos, i32vec2 mouse_down_point) {
     if (grab_mode) {
         if (grab_mode & 0x01) {
             // resize x left

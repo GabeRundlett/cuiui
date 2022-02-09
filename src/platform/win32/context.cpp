@@ -82,6 +82,20 @@ namespace cuiui::platform::win32 {
                     },
                 });
             } break;
+            case WM_MOUSEWHEEL: {
+                auto offset = f32vec2{
+                    // static_cast<float>((lp & 0x0000ffff) >> 0x00),
+                    // static_cast<float>((lp & 0xffff0000) >> 0x10),
+                    0,
+                    static_cast<float>(GET_WHEEL_DELTA_WPARAM(wp)),
+                };
+                window.events.push({
+                    .type = EventType::MouseScrollEvent,
+                    .data = MouseScrollEvent{
+                        .offset = offset,
+                    },
+                });
+            } break;
             case WM_LBUTTONDOWN: {
                 window.events.push({.type = EventType::MouseButtonEvent, .data = MouseButtonEvent{.key = 0, .action = 1}});
             } break;

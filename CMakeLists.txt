@@ -30,6 +30,7 @@ if(CUIUI_USE_X11)
 endif()
 if(CUIUI_USE_WIN32)
     target_sources(cuiui PRIVATE "src/platform/win32/context.cpp")
+    target_link_libraries(cuiui PRIVATE opengl32)
     target_link_libraries(cuiui PUBLIC dwmapi)
     target_compile_definitions(cuiui PUBLIC WIN32_LEAN_AND_MEAN NOMINMAX)
 endif()
@@ -37,7 +38,6 @@ endif()
 # Build options
 if(BUILD_SHARED_LIBS)
     if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
-        target_link_libraries(cuiui PRIVATE opengl32)
         target_compile_definitions(cuiui
             PRIVATE "CUIUI_EXPORT=__declspec(dllexport)"
             INTERFACE "CUIUI_EXPORT=__declspec(dllimport)")

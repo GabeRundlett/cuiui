@@ -91,6 +91,12 @@ struct vec : detail::vec_members<value_t, n> {
             result[i] = (*this)[i] * other[i];
         return result;
     }
+    constexpr auto operator/(const vec_type &other) const {
+        vec_type result;
+        for (size_t i = 0; i < n; ++i)
+            result[i] = (*this)[i] / other[i];
+        return result;
+    }
     constexpr auto operator*(const value_t &other) const {
         vec_type result;
         for (size_t i = 0; i < n; ++i)

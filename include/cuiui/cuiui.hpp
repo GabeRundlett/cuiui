@@ -17,6 +17,9 @@ namespace cuiui {
         uint32_t key;
         uint32_t action;
     };
+    struct MouseScrollEvent {
+        f32vec2 offset;
+    };
     struct MouseMotionEvent {
         f32vec2 pos;
     };
@@ -30,13 +33,14 @@ namespace cuiui {
         KeyEvent,
         MouseButtonEvent,
         MouseMotionEvent,
+        MouseScrollEvent,
         WindowMotionEvent,
         WindowResizeEvent,
     };
 
     struct Event {
         EventType type;
-        std::variant<KeyEvent, MouseButtonEvent, MouseMotionEvent, WindowMotionEvent, WindowResizeEvent> data;
+        std::variant<KeyEvent, MouseButtonEvent, MouseMotionEvent, MouseScrollEvent, WindowMotionEvent, WindowResizeEvent> data;
     };
 
     static constexpr auto x = sizeof(Event);

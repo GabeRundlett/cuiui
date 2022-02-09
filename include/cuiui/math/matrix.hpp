@@ -10,29 +10,47 @@ struct mat : vec<vec<value_t, n>, m> {
     template <size_t p>
     using mul_mat_result_type = mat<value_t, m, p>;
 
-    template <size_t p>
-    constexpr auto operator*(const mat<value_t, n, p> &other) {
-        auto c = mat<value_t, m, p>{};
-        auto &a = *this;
-        auto &b = other;
-        for (int i = 0; i < m; ++i) {
-            for (int j = 0; j < p; ++j) {
-                c[i][j] = 0;
-                for (int k = 0; k < n; ++k)
-                    c[i][j] += a[i][k] * b[k][j];
-            }
-        }
-        return c;
-    }
-
-    static constexpr auto identity(value_t scalar = 1) {
+    static constexpr auto identity(value_t x = 1) {
         static_assert(m == n);
         mat_type result{};
         for (size_t i = 0; i < m; ++i)
-            result[i][i] = scalar;
+            result[i][i] = x;
         return result;
     }
 };
+
+template <typename value_t, size_t m, size_t n, size_t p>
+constexpr auto operator*(const mat<value_t, m, n> &a, const mat<value_t, n, p> &b) {
+    auto c = mat<value_t, m, p>{};
+    for (size_t i = 0; i < m; ++i) {
+        for (size_t j = 0; j < p; ++j) {
+            c[i][j] = 0;
+            for (size_t k = 0; k < n; ++k)
+                c[i][j] += a[i][k] * b[k][j];
+        }
+    }
+    return c;
+}
+template <typename value_t, size_t m, size_t n>
+constexpr auto operator*(const mat<value_t, m, n> &a, const vec<value_t, n> &v) {
+    auto c = vec<value_t, n>{};
+    for (size_t i = 0; i < m; ++i) {
+        c[i] = 0;
+        for (size_t k = 0; k < n; ++k)
+            c[i] += a[i][k] * v[k];
+    }
+    return c;
+}
+template <typename value_t, size_t n, size_t p>
+constexpr auto operator*(const vec<value_t, n> &v, const mat<value_t, n, p> &b) {
+    auto c = vec<value_t, n>{};
+    for (size_t j = 0; j < p; ++j) {
+        c[j] = 0;
+        for (size_t k = 0; k < n; ++k)
+            c[j] += v[k] * b[k][j];
+    }
+    return c;
+}
 
 template <typename value_t>
 inline auto perspective(value_t fovy, value_t aspect, value_t z_near, value_t z_far) {
