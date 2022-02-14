@@ -52,14 +52,34 @@ constexpr auto operator*(const vec<value_t, n> &v, const mat<value_t, n, p> &b) 
     return c;
 }
 
+template <typename value_t, size_t m, size_t n>
+constexpr auto transpose(const mat<value_t, m, n> &x) {
+    mat<value_t, n, m> result;
+    for (size_t mi = 0; mi < m; ++mi) {
+        for (size_t ni = 0; ni < n; ++ni)
+            result[ni][mi] = x[mi][ni];
+    }
+    return result;
+}
+
+template <typename value_t, size_t n>
+constexpr auto inverse(const mat<value_t, n, n> &x) {
+    mat<value_t, n, n> result;
+    for (size_t mi = 0; mi < n; ++mi) {
+        for (size_t ni = 0; ni < n; ++ni)
+            result[ni][mi] = x[mi][ni];
+    }
+    return result;
+}
+
 template <typename value_t>
 inline auto perspective(value_t fovy, value_t aspect, value_t z_near, value_t z_far) {
     const value_t tan_half_fovy = std::tan(fovy / 2);
     mat<value_t, 4, 4> result{};
     result[0] = {value_t{1} / (aspect * tan_half_fovy), 0, 0, 0};
     result[1] = {0, value_t{1} / tan_half_fovy, 0, 0};
-    result[2] = {0, 0, -(z_far + z_near) / (z_far - z_near), 0};
-    result[3] = {0, 0, -(value_t{2} * z_far * z_near) / (z_far - z_near), -1};
+    result[2] = {0, 0, -(z_far + z_near) / (z_far - z_near), -1.0f};
+    result[3] = {0, 0, -(value_t{2} * z_far * z_near) / (z_far - z_near), 0};
     return result;
 }
 
