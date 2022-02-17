@@ -28,7 +28,7 @@ constexpr u32 get_hovered_edge(i32rect r, i32vec2 p, int margin) {
     return result;
 }
 
-constexpr void drag(u32 grab_mode, i32vec2 &pos, i32vec2 &dim, i32vec2 min_dim, i32vec2 currentpos, i32vec2 mouse_down_point) {
+void drag(u32 grab_mode, i32vec2 &pos, i32vec2 &dim, i32vec2 min_dim, i32vec2 currentpos, i32vec2 mouse_down_point) {
     if (grab_mode) {
         if (grab_mode & 0x01) {
             // resize x left
