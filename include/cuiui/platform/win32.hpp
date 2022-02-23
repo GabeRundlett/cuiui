@@ -81,11 +81,8 @@ namespace cuiui::platform::win32 {
             WindowT::unregister_wc();
         }
         void update() {
-            MSG msg;
-            while (PeekMessageW(&msg, nullptr, 0, 0, PM_REMOVE)) {
-                TranslateMessage(&msg);
-                DispatchMessageW(&msg);
-            }
+            for (auto &[id, window] : cuiui::Context<WindowT>::windows)
+                window->update();
         }
     };
 } // namespace cuiui::platform::win32

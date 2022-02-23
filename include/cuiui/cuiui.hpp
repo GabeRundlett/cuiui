@@ -43,18 +43,22 @@ namespace cuiui {
         std::variant<KeyEvent, MouseButtonEvent, MouseMotionEvent, MouseScrollEvent, WindowMotionEvent, WindowResizeEvent> data;
     };
 
-    static constexpr auto x = sizeof(Event);
-
     struct WindowConfig {
         std::string_view id;
         std::string_view title;
         u32vec2 size;
     };
 
+    struct EventQueue : public std::queue<Event> {
+        auto &get() {
+            return c;
+        }
+    };
+
     struct WindowState {
         u32vec2 size;
         bool should_close;
-        std::queue<Event> events;
+        EventQueue events;
     };
 
     template <typename WindowT>

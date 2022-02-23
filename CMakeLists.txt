@@ -4,7 +4,11 @@ include(CMakePackageConfigHelpers)
 include(GNUInstallDirs)
 add_library(cuiui "src/platform/null/context.cpp")
 add_library(cuiui::cuiui ALIAS cuiui)
-target_compile_features(cuiui PUBLIC cxx_std_20)
+if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+    target_compile_options(cuiui PUBLIC /std:c++latest)
+else()
+    target_compile_features(cuiui PUBLIC cxx_std_20)
+endif()
 
 # API selection
 set(CUIUI_NATIVE_APIS NULL X11 WIN32)
